@@ -7,6 +7,19 @@ use regex::Regex;
 use std::path::Path;
 
 fn main() {
+    println!("当前版本：v1
+支持系统：windows, linux
+
+软件使用方式
+方式一：windows
+  1. 将软件拖入到需要解压的文件夹
+  2. 输入仓库路径和密码
+  3. 解压完成
+
+方式二：windows, linux
+  1. restic_decompress.exe <仓库路径>
+  2. 输入仓库密码
+  3. 解压完成");
     let restic_result = check_restic_path();
     if restic_result == 0 {
         println!("你的电脑未安装 restic，程序当前目录现在没有检测到文件 restic.exe");
