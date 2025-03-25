@@ -7,19 +7,14 @@ use regex::Regex;
 use std::path::Path;
 
 fn main() {
-    println!("当前版本：v1
-支持系统：windows, linux
-
-软件使用方式
-方式一：windows
-  1. 将软件拖入到需要解压的文件夹
-  2. 输入仓库路径和密码
-  3. 解压完成
-
-方式二：windows, linux
-  1. restic_decompress.exe <仓库路径>
-  2. 输入仓库密码
-  3. 解压完成");
+    println!("xdecompress 当前版本：v1.5
+👴 作者：菜玖玖emoji
+📺 bilibili：https://space.bilibili.com/395819372
+🧠 软件教程(失效记得艾特我)：https://www.yuque.com/xtnxnb/qo095a/tnve5f0rtnu9ad96?singleDoc#
+💰 本软件永久免费，亲爱的富哥大姐，如有能力可以点击下方链接请我一杯米雪冰城吗，谢谢啦！！！
+💰 https://afdian.com/a/wocaijiujiu
+👏 感谢使用 ヾ(≧▽≦*)o
+    ");
     let restic_result = check_restic_path();
     if restic_result == 0 {
         println!("你的电脑未安装 restic，程序当前目录现在没有检测到文件 restic.exe");
@@ -188,7 +183,7 @@ fn restic_restore(restic_exe_path: &str, restic_path: &str, output_path: &str, p
 
     let snapshot_path = snapshot_path.ok_or(format!("未找到 snapshot_id 为 {} 的快照", snapshot_id))?;
 
-    // 执行恢复命令
+    // 执行恢复命令（带路径模式）
     let mut restore_cmd = Command::new(restic_exe_path)
         .args(["-r", restic_path, "restore", &format!("{}:{}", snapshot_id, snapshot_path), "--target", output_path])
         .stdin(std::process::Stdio::piped())
@@ -200,11 +195,37 @@ fn restic_restore(restic_exe_path: &str, restic_path: &str, output_path: &str, p
     std::io::Write::write_all(&mut restore_cmd.stdin.as_mut().unwrap(), passwd.as_bytes()).map_err(|e| e.to_string())?;
     let restore_output = restore_cmd.wait_with_output().map_err(|e| e.to_string())?;
 
-    if restore_output.status.success() {
-        Ok(String::from_utf8_lossy(&restore_output.stdout).into_owned())
-    } else {
-        Err(String::from_utf8_lossy(&restore_output.stderr).into_owned())
+    // 新增错误处理逻辑
+    if !restore_output.status.success() {
+        let stderr = String::from_utf8_lossy(&restore_output.stderr);
+        
+        // 检测路径未找到错误
+        if stderr.contains("path") && stderr.contains("not found") {
+            println!("检测到路径错误，尝试使用单目录恢复模式...");
+            
+            // 使用不带路径的恢复命令重试
+            let mut retry_cmd = Command::new(restic_exe_path)
+                .args(["-r", restic_path, "restore", snapshot_id, "--target", output_path])
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::piped())
+                .spawn()
+                .map_err(|e| e.to_string())?;
+
+            std::io::Write::write_all(&mut retry_cmd.stdin.as_mut().unwrap(), passwd.as_bytes()).map_err(|e| e.to_string())?;
+            let retry_output = retry_cmd.wait_with_output().map_err(|e| e.to_string())?;
+
+            if retry_output.status.success() {
+                return Ok(String::from_utf8_lossy(&retry_output.stdout).into_owned());
+            } else {
+                return Err(String::from_utf8_lossy(&retry_output.stderr).into_owned());
+            }
+        }
+        
+        return Err(stderr.into_owned());
     }
+
+    Ok(String::from_utf8_lossy(&restore_output.stdout).into_owned())
 }
 
 /// 检查系统中 restic 的可用性
