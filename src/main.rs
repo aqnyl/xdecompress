@@ -11,7 +11,7 @@ fn main() {
 👴 作者：菜玖玖emoji
 📺 bilibili：https://space.bilibili.com/395819372
 🧠 软件教程(失效记得艾特我)：https://www.yuque.com/xtnxnb/qo095a/tnve5f0rtnu9ad96?singleDoc#
-💰 本软件永久免费，亲爱的富哥大姐，如有能力可以点击下方链接请我一杯米雪冰城吗，谢谢啦！！！
+💰 本软件永久免费，亲爱的富哥大姐，如有能力可以点击下方链接请我一杯蜜雪冰城吗，谢谢啦！！！
 💰 https://afdian.com/a/wocaijiujiu
 👏 感谢使用 ヾ(≧▽≦*)o
     ");
