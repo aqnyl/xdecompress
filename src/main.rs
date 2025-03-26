@@ -7,7 +7,7 @@ use regex::Regex;
 use std::path::Path;
 
 fn main() {
-    println!("xdecompress 当前版本：v1.5
+    println!("xdecompress 当前版本：v1.5.1
 👴 作者：菜玖玖emoji
 📺 bilibili：https://space.bilibili.com/395819372
 🧠 软件教程(失效记得艾特我)：https://www.yuque.com/xtnxnb/qo095a/tnve5f0rtnu9ad96?singleDoc#
@@ -130,6 +130,7 @@ fn restic_restore(restic_exe_path: &str, restic_path: &str, output_path: &str, p
     //     .wait_with_output()
     //     .map_err(|e| e.to_string())?;
 
+    let output_path = "./"; // v1.5.1 新增，默认恢复到当前工作目录
     // 输入密码
     let mut child = Command::new(restic_exe_path)
         .args(["-r", restic_path, "snapshots", "--json"])
